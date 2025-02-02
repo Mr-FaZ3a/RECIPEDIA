@@ -8,3 +8,23 @@ body{
     background-color: #f4f4f4;
     padding: 20px;
 }
+
+.buttons *{
+    margin : 5px;
+}
+
+.container{
+    margin : 50px auto;
+}
+.fa-search{
+    position : absolute;
+    opacity : 0.5;
+    z-index: 1;
+    margin : 10px
+}
+
+.search:focus{
+    .fa-search{
+        opacity : 0;
+    }
+}

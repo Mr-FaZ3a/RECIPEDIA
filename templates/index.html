@@ -2,12 +2,21 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 
-<div class="container">
-    <div class="row">
+<div class="container index">
+    <br>
+    <div class="row lead">
         <div class="col-md-12">
             <h1>Home</h1>
             <p>Welcome to the Recipedia!</p>
             <p>Recipedia is a recipe sharing website where you can share your favorite recipes with the world. You can also browse and search for recipes that other users have shared.</p>
         </div>
     </div>
+    <br>
+    <div class="row lead">
+        <div class="col-md-12  buttons">
+            <a href="/kitchen" class="btn btn-primary btn-flex">Add ingredients</a>
+            <a href="/recipes" class="btn btn-secondary btn-flex">View Recipes</a>
+        </div>
+    </div>
+</div>
 {% endblock %}
