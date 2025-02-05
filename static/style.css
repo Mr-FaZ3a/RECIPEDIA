@@ -9,10 +9,9 @@ body{
     padding: 20px;
 }
 
-.buttons *{
-    margin : 5px;
+.buttons {
+    margin : 5px 0;
 }
-
 .container{
     margin : 50px auto;
 }

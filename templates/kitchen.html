@@ -17,15 +17,12 @@
                             <i class="fas fa-search" id="searchSymb"></i>
                             <input type="text" class="form-control search" id="ingredients" name="ingredients" placeholder="    Enter ingredients and select from suggestions bellow">
                         </div>
-                        
                     </div>
+                    <li class='well' id="suggestions"></li>
+                    
                 </form>
-                <ul>
-                    {% for ingredient in ingredients %}
-                        <li>{{ ingredient.name }}</li>
-                    {% endfor %}
-                </ul>
             </div>
         </div>
+        <script src="../static/scripts/ingredients.js"></script>
     </div>
 {% endblock %}
