@@ -11,5 +11,8 @@ def index():
 
 @app.route("/kitchen")
 def kitchen():
+    ingredients = request.args.get("ingredients")
+    print(ingredients)
+
     return render_template("kitchen.html")  
 
