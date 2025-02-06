@@ -1,5 +1,6 @@
 function main () {
     let search = document.getElementById('ingredients')
+    search.value = "";
     search.addEventListener("input", () => {
         let searchSymb = document.getElementById("searchSymb")
         searchSymb.style.opacity = search.value ? "0" : "0.5"
@@ -22,23 +23,29 @@ const SuggestionsByIngredients = async () => {
         ingredients : ingredient.value,
         number : 10
     })
+
     const response = await fetch(`${endpoint}?${param}`)
 
     if (!response.ok) throw new Error("Failed to fetch data")
     else {
         const data = await response.json()
-        console.log(data)
-        updateSuggestions(data)
+        updateSuggestions(data, "Ingredients")
     }
 }
 
-const updateSuggestions = (data) => {
+const updateSuggestions = (data, type) => {
+    let input = document.getElementById("ingredients")
+
+    input.style.boxShadow = verifyObject(data) ? "0 0 10px green" : "0 0 10px red"
+
     const suggestions = document.getElementById("suggestions")
     suggestions.innerHTML = ""
     
     for (let recipe of data){
         suggestions.innerHTML += `
-            <li class="suggestions"><img src="${recipe.image}" alt="image photo">${recipe.title}</li>
+            <div class="suggestions container-block col-md-4"><div class="well">#${ingredients}<img src="${recipe.image}">${recipe.title}</div></div>
         `
     }
 }
+
+const verifyObject = obj => obj && obj !== "null" && obj !== "undefined" && Object.keys(obj).length > 0
