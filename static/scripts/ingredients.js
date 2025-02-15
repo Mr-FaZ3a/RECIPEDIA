@@ -1,15 +1,25 @@
+
 function main () {
     let search = document.getElementById('ingredients')
     search.value = "";
     search.addEventListener("input", () => {
         let searchSymb = document.getElementById("searchSymb")
         searchSymb.style.opacity = search.value ? "0" : "0.5"
+        fetch("/kitchen",
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ingredients: search.value})
+        }
+        ).then(response => response.json()).then(data => {console.log(data)})
 
-        SuggestionsByIngredients()
-    })
-
- 
+        // SuggestionsByIngredients()
+    }) 
 }
+
+
 
 window.onload = main
 
@@ -43,7 +53,7 @@ const updateSuggestions = (data, type) => {
     
     for (let recipe of data){
         suggestions.innerHTML += `
-            <div class="suggestions container-block col-md-4"><div class="well">#${ingredients}<img src="${recipe.image}">${recipe.title}</div></div>
+            <div class="suggestions container-block col-md-4"><div class="well">#${type}<img src="${recipe.image}">${recipe.title}</div></div>
         `
     }
 }

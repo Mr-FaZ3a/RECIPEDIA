@@ -18,7 +18,13 @@
                             <input type="text" class="form-control search" id="ingredients" name="ingredients" placeholder="    Enter ingredients and select from suggestions bellow">
                         </div>
                     </div>
-                    <div class="row" id="suggestions"></div>
+                    <div class="row" id="suggestions">
+                        {% if RECIPES %}
+                            {% for recipe in RECIPES %}
+                                <div class="container-block col-md-4 row suggestions"><i class="text-info">{{type}}</i><img src="{{recipe['image']}}">{{recipe["title"]}}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
                 </form>
             </div>
         </div>
