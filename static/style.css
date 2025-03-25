@@ -31,3 +31,13 @@ body{
 .suggestions{
     margin : 10px 0;
 }
+
+form[class~="kitchen"]>*{
+    margin : 5px 0 !important;
+}
+
+img:not([src]) {
+    visibility: hidden;
+
+    background-color: #333;
+}
