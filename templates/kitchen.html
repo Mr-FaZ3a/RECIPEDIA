@@ -6,28 +6,78 @@
             <div class="col-md-12">
                 <h1>My Kitchen</h1>
                 <p>place all what you got in your packet like, ingredients, kitchen and keywords, and leave the rest to us :)</p>
-                <form action="/kitchen" method="get">
-                    <div class="row">
-                        <div class="col-md-1"></div>
-                        <div class="col-md-2">
-                            <label for="ingredients">Ingredients <i class="fas fa-long-arrow-right" aria-hidden="true"></i></label>
-                        </div>
-
-                        <div class="col-md-6">
-                            <i class="fas fa-search" id="searchSymb"></i>
-                            <input type="text" class="form-control search" id="ingredients" name="ingredients" placeholder="    Enter ingredients and select from suggestions bellow">
+                <form action="/kitchen" method="post" class="form-control kitchen">
+                    <div class="row complexity ">
+                        <div class="col-md-auto container-fluid form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="complex" id="enable-complex">
+                            <label class="form-check-label" for="enable-complex">Complex search</label> 
                         </div>
                     </div>
+                    <div class="row nutrients ">
+                        <div class="col-auto container-block"></div>
+                        <div class="col-md-3 container-block form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="simple" id="enable-nutrients">
+                            <label class="form-check-label" for="enable-nutrients">Search by Nutrients</label>
+                        </div>
+                        <div class="col-md-6 container-block">
+                            <i class="fas fa-search" id="searchSymbnutrients"></i>
+                            <input type="text" class="form-control search" id="nutrients" name="nutrients" placeholder="    Enter nutrients and select from suggestions bellow">
+                            <sub class="form-text text-muted">e.g., protein=10, fat>5, carbs<20</sub>
+                            
+                        </div>
+
+                    </div>
+                    <div class="row ingredients ">
+                        <div class="col-auto container-block"></div>
+                        <div class="col-md-3 container-block form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="simple" id="enable-ingredients">
+                            <label class="form-check-label" for="enable-ingredients">Search by Ingredients</label>
+                        </div>
+
+                        <div class="col-md-6 container-block">
+                            <i class="fas fa-search" id="searchSymbingredients"></i>
+                            <input type="text" class="form-control search" id="ingredients" name="ingredients" placeholder="    Enter ingredients and select from suggestions bellow">
+                            <sub class="form-text text-muted">e.g., apple, pineapple, banana...</sub>
+                        </div>
+                    </div>
+                    <div class="row cuisine ">
+                        <div class="col-auto container-block"></div>
+                        <div class="col-md-3 container-block form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="simple" id="enable-cuisine">
+                            <label class="form-check-label" type="checkbox" for="enable-cuisine">Search by Cuisine</label>
+                            
+                        </div>
+                        <div class="col-md-6 container-block">
+                            <i class="fas fa-search" id="searchSymbcuisine"></i>
+                            <input type="text" class="form-control search" id="cuisine" name="cuisine" placeholder="    Enter cuisine and select from suggestions bellow">
+                        </div>
+                    </div>
+                    <div class="row keywords ">
+                        <div class="col-auto container-block"></div>
+                        <div class="col-md-3 container-block form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="simple" id="enable-keywords">
+                            <label class="form-check-label" for="enable-keywords">Search by Keywords</label>
+                        </div>
+                        <div class="col-md-6 container-block">
+                            <i class="fas fa-search" id="searchSymbkeywords"></i>
+                            <input type="text" class="form-control search" id="keywords" name="keywords" placeholder="    Enter keywords and select from suggestions bellow">
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-auto container-fluid">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </div> 
                     <div class="row" id="suggestions">
                         {% if RECIPES %}
                             {% for recipe in RECIPES %}
-                                <div class="container-block col-md-4 row suggestions"><i class="text-info">{{type}}</i><img src="{{recipe['image']}}">{{recipe["title"]}}</div>
+                                <div class="container-block col-md-4 row suggestions"><i class="text-secondary">{{type}}</i><img loading="lazy" src="{{recipe['image']}}">{{recipe["title"]}}</div>
                             {% endfor %}
                         {% endif %}
                     </div>
                 </form>
             </div>
         </div>
-        <script src="../static/scripts/ingredients.js"></script>
     </div>
 {% endblock %}

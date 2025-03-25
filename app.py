@@ -1,12 +1,11 @@
 from flask import Flask, request, jsonify, render_template, redirect
 from cs50 import SQL
 import requests, aiohttp
+from basic import request_simple
 
 app = Flask(__name__)
 
 db = SQL("sqlite:///database.db")
-
-URL = "https://api.spoonacular.com/recipes/"
 
 RECIPES = {}
 
@@ -14,35 +13,35 @@ RECIPES = {}
 def index():
     return render_template("index.html")
     
-@app.route("/kitchen")
-async def kitchen():
-    ingredients = request.args.get("ingredients")
-    RECIPES = await requests_by_ingredietns(ingredients)
+@app.route("/kitchen", methods=["GET", "POST"])
+def kitchen():
     return render_template("kitchen.html", RECIPES=RECIPES, type="ingredients")  
 
-async def requests_by_ingredietns(ingredients):
-    try : 
-        param = { 
-            "apiKey": "ca3f41f038834995add29d5032f16a23",
-            "ingredients": ingredients,
-            "number": 10
-        }
-        async with aiohttp.ClientSession() as session:
-            async with session.get(URL + "findByIngredients", params=param) as response: 
-                print(response.json())
-                response.raise_for_status() 
+@app.route("/api/data", methods=["POST"])
+async def get_data():
+    global RECIPES
 
-                return await response.json()
-    
-    except requests.RequestException as e : 
-        raise e
-    except (KeyError, TypeError, ValueError) as e :
-        pass
-    except Exception as e : 
-        print(e)
-
-@app.route("/data/api")
-def get_data():
     if request.content_type == "application/json":
-        print("HELLLO WORLDDDDDDD")
-        return jsonify(RECIPES)
+
+        data = request.get_json()
+
+        for key, value in data.items():
+            if value : 
+                RECIPES = await request_simple({key : value})
+
+
+        return jsonify(RECIPES=RECIPES)
+    
+@app.route("/api/auto-complete", methods=["POST"])
+async def get_completion():
+    SUG = {}
+
+    if request.content_type == "application/json":
+        # TODO
+        input = request.get_json()
+
+        for key, value in input.items():
+            if value :
+                SUG = await request_simple(value)
+
+        return jsonify(SUG=SUG)
