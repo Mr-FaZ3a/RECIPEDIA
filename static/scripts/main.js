@@ -1,19 +1,27 @@
 function main () {
-    init()
     styleSearch()
 
     let search = document.querySelectorAll('.search')
     let switches = document.querySelectorAll(".form-check-input")
 
     switches = Array.from(switches)
-    search.forEach((input, index) => input.addEventListener("input", () => {
+    search = Array.from(search)
+
+    search.forEach((s, index) => s.addEventListener("input", () => {
+        // generate input
+        let input;
+        for (let i in s.children)
+            if (s.children[i].tagName == "INPUT")
+                input = s.children[i]
+            else if (input) break
+
         let searchSymb = document.getElementById("searchSymb" + input.id)
         searchSymb.style.opacity = input.value ? "0" : "0.5"
         
         if (switches[index + 1]?.checked)
             
             fetchAutoComplete(input, "api/data").then(response => response.json()).then(data => {
-                SUG = data?.SUG
+                let SUG = data?.SUG
 
                 const newDiv = document.createElement("div", {class: "Container-fluid Well"})
 
@@ -70,7 +78,7 @@ const SuggestionsByIngredients = async () => {
 }
 
 const updateSuggestions = (data, type) => {
-    let input = document.getElementById("ingredients")
+    const input = document.getElementById("ingredients")
 
     input.style.boxShadow = verifyObject(data) ? "0 0 10px green" : "0 0 10px red"
 
@@ -88,49 +96,27 @@ const verifyObject = obj => obj && obj !== "null" && obj !== "undefined" && Obje
 
 const styleSearch = () => {
     let switches = document.querySelectorAll(".form-check-input")
-    let search = document.querySelectorAll(".search")
-
+    let inputs = document.querySelectorAll(".search")
     switches = Array.from(switches)
-    search = Array.from(search)
+    inputs = Array.from(inputs)
 
-    const handleSwitch = (sw, index, open) => {
-        let exDiv = search[index]?.parentElement
-        if (exDiv){
-            sw.checked = open
-            exDiv.style.display = sw.checked ? "block" : "none"
-        }
-    }
+    const inputDisplay = (index, display) => index > -1 ? inputs[index].style.display = display ? "block" : "none" : null 
+    let complexMode = false
+    switches.forEach((sw, index) => sw.addEventListener("change", () => {
+        if (sw.name == "complex") {
+            complexMode = !complexMode
+            switches.forEach((s, index) =>{
+                s.checked = complexMode;
+                inputDisplay(index-1, complexMode) 
+            })
+        }else if (sw.id == "enable-cuisine") {
+            switches[0].checked = sw.checked
+            switches[1].checked = sw.checked || switches[1].checked
+            switches[2].checked = sw.checked || switches[2].checked
 
-    let nb = 0
-    
-    switches.forEach((sw, index) => {
-        sw.addEventListener("change", () => {
-
-            if (index == 0) {
-                switches.forEach((sw, index) => {
-                    handleSwitch(sw, index - 1, switches[0].checked)
-                    nb = sw.checked ? 4 : 0
-                })
-                return;
-            }
-            nb += sw.checked && index ? 1 : -1
-            
-            if (nb > 1)   
-                switches[0].checked = true
-            else switches[0].checked = false
-            
-            console.log(nb)
-            
-            handleSwitch(sw, index - 1, sw.checked)
-        })
-    })
-
-}
-
-const init = () => {
-    let search = document.querySelectorAll(".search")
-    search.forEach(input => {
-        exDiv = input.parentElement
-        exDiv.style.display = "none"
-    })
+            switches.forEach((s, index) => inputDisplay(index - 1, s.checked))
+        
+        }else 
+            inputDisplay(index-1, sw.checked)
+    }))
 }

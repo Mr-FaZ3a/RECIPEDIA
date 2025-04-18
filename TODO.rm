@@ -1,0 +1,21 @@
+1. switches (COMPLETED)
+    1.1 when nutrients switch enabled nutrients input on
+    1.2 when ingredients switch enabled ingredients input on
+    1.3 when cuisine switch enabled, complex search is enabled and all the switches too 
+
+2. auto completion
+    2.1 nutrients doesn't support auto complete feature
+    2.2 ingredients should have autocomplete feature
+    2.3 cuisine can have autocomplete feature (option)
+
+3. api correctness 
+    3.1 nutrients uses api url/findByNutrients
+    3.2 ingredients uses api url/findByIngredients
+    3.3 cuisine uses complex search api url/complexSearch
+    3.4 ingredients auto complete api uses url/food/ingredients/autocomplete
+    3.5 cuisine auto complete api uses url/autocomplete
+
+4. image cards
+    4.1 images that displayed in /kitchen, when hovers on, there should be a favorite heart button
+    4.2 images that clicked in /kitchen should redirect you to /recipes to view recipe card
+
