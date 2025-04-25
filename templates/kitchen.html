@@ -20,11 +20,11 @@
                             <label class="form-check-label" for="enable-nutrients">Search by Nutrients</label>
                         </div>
                         <div class="col-md-6">
-                            <div class="container-block search">
+                            <div class="container-block search" tabindex="1">
                                 <i class="fas fa-search" id="searchSymbnutrients"></i>
-                                <input type="text" class="form-control " id="nutrients" name="nutrients" placeholder="    Enter nutrients and select from suggestions bellow">
+                                <input autocomplete="off" type="text" class="form-control " id="nutrients" name="nutrients" placeholder="    Enter nutrients and select from suggestions bellow">
                                 <sub class="form-text text-muted">e.g., protein=10, fat>5, carbs<20</sub>
-                            </div>
+                           </div>
                         </div>
                     </div>
                     <div class="row ingredients ">
@@ -34,22 +34,26 @@
                             <label class="form-check-label" for="enable-ingredients">Search by Ingredients</label>
                         </div>
 
-                        <div class="col-md-6 container-block search">
+                        <div class="col-md-6 container-block search" tabindex="2">
                             <i class="fas fa-search" id="searchSymbingredients"></i>
-                            <input type="text" class="form-control " id="ingredients" name="ingredients" placeholder="    Enter ingredients and select from suggestions bellow">
+                            <input autocomplete="off" type="text" class="form-control " id="ingredients" name="ingredients" placeholder="    Enter ingredients and select from suggestions bellow">
                             <sub class="form-text text-muted">e.g., apple, pineapple, banana...</sub>
+                            <ul class="list-group list-group-flush" id="ingredients-sug">
+                            </ul>
                         </div>
                     </div>
                     <div class="row cuisine ">
                         <div class="col-auto container-block"></div>
                         <div class="col-md-3 container-block form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" name="simple" id="enable-cuisine">
-                            <label class="form-check-label" type="checkbox" for="enable-cuisine">Search by Cuisine</label>
+                            <label class="form-check-label" for="enable-cuisine">Search by Cuisine</label>
                             
                         </div>
-                        <div class="col-md-6 container-block search">
+                        <div class="col-md-6 container-block search" tabindex="0">
                             <i class="fas fa-search" id="searchSymbcuisine"></i>
-                            <input type="text" class="form-control " id="cuisine" name="cuisine" placeholder="    Enter cuisine and select from suggestions bellow">
+                            <input autocomplete="off" type="text" class="form-control " id="cuisine" name="cuisine" placeholder="    Enter cuisine and select from suggestions bellow">
+                            <ul class="list-group list-group-flush" id="cuisine-sug">
+                            </ul>
                         </div>
                     </div>
                     <div class="row">
@@ -60,7 +64,7 @@
                     <div class="row" id="suggestions">
                         {% if RECIPES %}
                             {% for recipe in RECIPES %}
-                                <div class="container-block col-md-4 row suggestions"><i class="text-secondary">{{type}}</i><img loading="lazy" src="{{recipe['image']}}">{{recipe["title"]}}</div>
+                                <div class="container-block col-md-4 row suggestions"><img loading="lazy" src="{{recipe['image']}}">{{recipe["title"]}}</div>
                             {% endfor %}
                         {% endif %}
                     </div>
@@ -69,3 +73,5 @@
         </div>
     </div>
 {% endblock %}
+
+

@@ -7,7 +7,8 @@ app = Flask(__name__)
 
 db = SQL("sqlite:///database.db")
 
-RECIPES = {}
+RECIPES = [] 
+SUG = dict(ingredients=[], cuisine=[])
 
 @app.route("/")
 def index():
@@ -15,7 +16,7 @@ def index():
     
 @app.route("/kitchen", methods=["GET", "POST"])
 def kitchen():
-    return render_template("kitchen.html", RECIPES=RECIPES, type="ingredients")  
+    return render_template("kitchen.html", RECIPES=RECIPES, SUG=SUG)
 
 @app.route("/api/data", methods=["POST"])
 async def get_data():
@@ -29,19 +30,22 @@ async def get_data():
             if value : 
                 RECIPES = await request_simple({key : value})
 
-
         return jsonify(RECIPES=RECIPES)
     
 @app.route("/api/auto-complete", methods=["POST"])
 async def get_completion():
-    SUG = {}
+    global SUG
 
     if request.content_type == "application/json":
         # TODO
         input = request.get_json()
 
         for key, value in input.items():
-            if value :
-                SUG = await request_simple(value)
+            if input.get(key) and key == "ingredients":
+                SUG[key] = await request_simple({key : value}, endpoint="/food/ingredients/autocomplete")
+            elif input.get(key) and key == "cuisine":
+                print(input.get(key))
+                SUG[key] = await request_simple({key : value}, endpoint="/recipes/autocomplete")
+                print(SUG)
 
         return jsonify(SUG=SUG)
