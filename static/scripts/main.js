@@ -1,3 +1,5 @@
+var SUG;
+
 function main () {
     styleSearch()
 
@@ -7,44 +9,85 @@ function main () {
     switches = Array.from(switches)
     search = Array.from(search)
 
-    search.forEach((s, index) => s.addEventListener("input", () => {
-        // generate input
-        let input;
-        for (let i in s.children)
-            if (s.children[i].tagName == "INPUT")
-                input = s.children[i]
-            else if (input) break
-
-        let searchSymb = document.getElementById("searchSymb" + input.id)
-        searchSymb.style.opacity = input.value ? "0" : "0.5"
-        
-        if (switches[index + 1]?.checked)
-            
-            fetchAutoComplete(input, "api/data").then(response => response.json()).then(data => {
-                let SUG = data?.SUG
-
-                const newDiv = document.createElement("div", {class: "Container-fluid Well"})
-
-                for (object in SUG){
-                    const newContent = document.createTextNode(object["title"])
-                    newDiv.appendChild(newDiv)
-                } 
-                input.parentElement.appendChild(newDiv)
-
-            })
-            
-            fetchRecipes(input, "api/auto-complete").then(response => response.json()).then(data => {
-                RECIPES = data?.RECIPES
-                input.style.boxShadow = verifyObject(RECIPES) ? "0 0 10px green" : "0 0 10px red"
+    search.forEach((s, index) => {
+        const input = generateInput(s)
+        if (input.id == "ingredients" || input.id == "cuisine"){
+            s.addEventListener("input", async event => {
+                await inputInputBehaviour(event, switches, index)
+                generateSUG(input)
             })
 
+            s.addEventListener("focusout", event => {
+                const list = document.getElementById(`${input.id}-sug`)
 
-    }))
+                let item = event.explicitOriginalTarget
+                item = event.explicitOriginalTarget?.classList ? item : item.parentNode
 
-    
+                if (item?.classList.contains(`${input.id}-item`)){
+                    input.value = item.innerHTML
+                    list.innerHTML = ``
+                }
+                else
+                    list.innerHTML = ``
+            })
+        }
+        else s.addEventListener("input", async event => await inputInputBehaviour(event, switches, index))
+    })
 }
 
-const fetchRecipes = (input, path) => fetch(path,
+const generateInput = search => {
+    for (let element in search.children)
+        if (search.children[element].tagName == "INPUT")
+            return search.children[element]
+}
+
+const generateSUG = (input) => {
+    for (let key in SUG){
+        const list = document.getElementById(`${key}-sug`)
+        
+        list.innerHTML = ``
+
+        for (let i of SUG[key]){
+            const index = input.value.lastIndexOf(",")
+            const item = document.createElement("li")
+         
+            console.log(i.title)
+            const text = document.createTextNode(input.value.substring(0, index + 1)+ " " + ((key == "ingredients") ? i.name : i.title))
+            item.className = `list-group-item list-group-item-action ${key}-item`
+
+            item.appendChild(text)
+            list.appendChild(item)
+        }
+    }
+}
+
+const inputInputBehaviour = async (event, switches, index) => {
+    const input = event.target
+    let searchSymb = document.getElementById("searchSymb" + input.id)
+    searchSymb.style.opacity = input.value ? "0" : "0.5"
+    
+    if (switches[index + 1]?.checked)
+    {
+
+//          fetchRecipes(input, "api/data").then(response => response.json()).then(data => {
+//              let SUG = data?.SUG
+
+//              const newDiv = document.createElement("div", {class: "Container-fluid Well"})
+
+//              for (object in SUG){
+//                  const newContent = document.createTextNode(object["title"])
+//                  newDiv.appendChild(newDiv)
+//              } 
+//              input.parentElement.appendChild(newDiv)
+
+//          })
+        
+        await fetchingPost(input, "api/auto-complete").then(response => response.json()).then(data => SUG = data?.SUG )
+    }
+}
+
+
+const fetchingPost = async (input, path) => await fetch(path, 
     {
         method: "POST",
         headers: {
@@ -116,7 +159,7 @@ const styleSearch = () => {
 
             switches.forEach((s, index) => inputDisplay(index - 1, s.checked))
         
-        }else 
+        }else
             inputDisplay(index-1, sw.checked)
     }))
 }

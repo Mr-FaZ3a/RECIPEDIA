@@ -22,12 +22,6 @@ body{
     margin : 10px
 }
 
-.search:focus{
-    .fa-search{
-        opacity : 0;
-    }
-}
-
 .suggestions{
     margin : 10px 0;
 }
@@ -52,4 +46,13 @@ input:enabled{
 
 input{
     transition : transform 0.5s ease;
+}
+
+.search{
+    display : none;
+}
+
+ul{
+    z-index : 99;
+    position : absolute;
 }

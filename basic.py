@@ -2,31 +2,43 @@ import aiohttp, requests
 
 ApiKey = "f2e9be5579ec4a5e82bd7845b377fa0b"
 
-URL = "https://api.spoonacular.com/recipes/"
+URL = "https://api.spoonacular.com/"
 
 async def request_simple(*args, **kwargs):
     data = args[0]
+    endpoint = kwargs.get("endpoint")
 
+    if "autocomplete" in endpoint :  
+        return await auto_complete(*args, **kwargs)
     if data.get("nutrients"):
         return await request_nutrients(*args, **kwargs)
-    elif data.get("ingredients"):
+    if data.get("ingredients"):
         return await request_ingredients(*args, **kwargs)
-    elif data.get("cuisine"):
+    if data.get("cuisine"):
         return await request_cuisine(*args, **kwargs)
-    else:
-        return await auto_complete(*args, **kwargs)
+
+#   if data.get("nutrients"):
+#       return await request_nutrients(*args, **kwargs)
+#   elif data.get("ingredients"):
+#       return await request_ingredients(*args, **kwargs)
+#   elif data.get("cuisine"):
+#       return await request_cuisine(*args, **kwargs)
+#   else:
+#       return await auto_complete(*args, **kwargs)
         
 def handleErrorRequest(func):
-    async def wrapper(data):
+    async def wrapper(*args, **kwargs):
+        data = args[0]
+        endpoint = kwargs.get("endpoint")
+
         keys = list(data.keys())
         values = list(data.values())
 
         title = keys[0].title()
 
         data[keys[0]] = phrasify(data[keys[0]])
-        print("phrasify ", data)
 
-        try : return await func(data, title)
+        try : return await func(data, title, endpoint)
         except requests.RequestException as e : print("Error 1:", e)
         except (KeyError, TypeError, ValueError) as e : print("Error 2:", e)
         except Exception as e : print("Error 3:", e)
@@ -36,7 +48,7 @@ def handleErrorRequest(func):
     return wrapper
 
 @handleErrorRequest
-async def request_ingredients(data, title):
+async def request_ingredients(data, title, endpoint):
     param = dict(
         apiKey=ApiKey,
         **data,
@@ -50,7 +62,7 @@ async def request_ingredients(data, title):
             return await response.json()
 
 @handleErrorRequest
-async def request_nutrients(data, title):
+async def request_nutrients(data, title, endpoint):
     data = stringify(data["nutrients"])
 
     param = dict(
@@ -60,13 +72,13 @@ async def request_nutrients(data, title):
     )
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(URL + f"findBy{title}", params=param) as response:
+        async with session.get(URL + f"/recipes/findBy{title}", params=param) as response:
             response.raise_for_status()
 
             return await response.json()
 
 @handleErrorRequest
-async def request_cuisine(data, title): 
+async def request_cuisine(data, title, endpoint): 
     param = dict(
         apiKey=ApiKey,
         **data,
@@ -74,23 +86,23 @@ async def request_cuisine(data, title):
     )
     
     async with aiohttp.ClientSession() as session:
-        async with session.get(URL + f"complexSearch", params=param) as response:
+        async with session.get(URL + f"/recipes/complexSearch", params=param) as response:
             response.raise_for_status()
 
             return await response.json()
         
 @handleErrorRequest
-async def auto_complete(data, title):
-    input = data[title.lower()]
-    
+async def auto_complete(data, title, endpoint):
+    input = data[title.lower()].split(",")[-1]
+     
     param = dict(
         apiKey=ApiKey,
         query=input,
-        number=10
+        number=5
     )
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(URL + f"food/ingredients/autocomplete", params = param) as response : 
+        async with session.get(URL + endpoint, params = param) as response : 
             response.raise_for_status()
 
             return await response.json()
