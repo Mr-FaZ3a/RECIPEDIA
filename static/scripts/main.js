@@ -178,6 +178,7 @@ const styleSearch = () => {
             })
         }else if (sw.id == "enable-cuisine") {
             switches[0].checked = sw.checked
+            complexMode = true 
             
             inputDisplay(index - 1, sw.checked)
         }else
