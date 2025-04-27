@@ -58,15 +58,11 @@
                     </div>
                     <div class="row">
                         <div class="col-md-auto container-fluid">
-                            <button type="submit" class="btn btn-primary">Search</button>
+                            <button type="reset" class="btn btn-danger">Reset</button>
+                            <button type="submit" class="btn btn-primary" id="submit-query">Search</button>
                         </div>
                     </div> 
-                    <div class="row" id="suggestions">
-                        {% if RECIPES %}
-                            {% for recipe in RECIPES %}
-                                <div class="container-block col-md-4 row suggestions"><img loading="lazy" src="{{recipe['image']}}">{{recipe["title"]}}</div>
-                            {% endfor %}
-                        {% endif %}
+                    <div class="Well container-fluid row" id="suggestions">
                     </div>
                 </form>
             </div>
