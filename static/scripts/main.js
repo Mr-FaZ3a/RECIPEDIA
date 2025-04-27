@@ -1,11 +1,13 @@
-var SUG;
+var SUG = [];
+var RECIPES = [];
+var lastInput ;
 
 function main () {
     styleSearch()
 
     let search = document.querySelectorAll('.search')
     let switches = document.querySelectorAll(".form-check-input")
-
+    
     switches = Array.from(switches)
     search = Array.from(search)
 
@@ -13,26 +15,94 @@ function main () {
         const input = generateInput(s)
         if (input.id == "ingredients" || input.id == "cuisine"){
             s.addEventListener("input", async event => {
+                console.log(event.target.id)
                 await inputInputBehaviour(event, switches, index)
                 generateSUG(input)
+
+                lastInput = input.value
             })
 
-            s.addEventListener("focusout", event => {
-                const list = document.getElementById(`${input.id}-sug`)
-
-                let item = event.explicitOriginalTarget
-                item = event.explicitOriginalTarget?.classList ? item : item.parentNode
-
-                if (item?.classList.contains(`${input.id}-item`)){
-                    input.value = item.innerHTML
-                    list.innerHTML = ``
-                }
-                else
-                    list.innerHTML = ``
-            })
+            s.addEventListener("focusout", event => SUGListBehaviour(event, input))
         }
         else s.addEventListener("input", async event => await inputInputBehaviour(event, switches, index))
     })
+
+    document.addEventListener("submit", event => {
+        event.preventDefault()
+        switches.forEach(async (sw, index) => {
+            if (sw.name == "simple" && sw.checked){
+                const input = generateInput(search[index-1])
+                
+                await fetchingPost(input, "/api/data").then(response => response.json()).then(data => generateRESULTS(data?.RECIPES));
+            }
+        })
+    })
+    document.addEventListener("reset", event => {
+        const suggestions = document.getElementById("suggestions")
+
+        RECIPES = []
+        suggestions.innerHTML = ``
+    })
+}
+
+const generateRESULTS = data => {
+    const suggestions = document.getElementById("suggestions")
+
+    const generate = object => {
+        for (let recipe of object) {
+            const newDiv = document.createElement("div")
+            const image = document.createElement("img")
+            const text = document.createTextNode(recipe["title"])
+            
+            image.loading = "lazy"
+            image.src = recipe['image']
+            
+            newDiv.className = "container-block col-md-4 suggestions"
+            
+            newDiv.appendChild(image)
+            newDiv.appendChild(text)
+            
+            if (checkRecipeExistance(recipe)){
+                suggestions.appendChild(newDiv)
+                RECIPES.push(recipe)
+            }
+        }
+    }
+
+    const checkRecipeExistance = recipe => {
+        for (let rec of RECIPES)
+            if (recipe.id == rec.id)
+                return false
+        return true
+    }
+
+    try{
+        for (let element in data) {
+            const object = data[element]
+            
+            if (!(typeof object === "object")) continue 
+            
+            generate(object)
+        }
+    }
+    catch{
+        generate(data)
+    }
+}
+
+
+const SUGListBehaviour = (event, input) => {
+    const list = document.getElementById(`${input.id}-sug`)
+
+    let item = event.explicitOriginalTarget
+    item = event.explicitOriginalTarget?.classList ? item : item.parentNode
+
+    if (item?.classList.contains(`${input.id}-item`))
+        input.value = item.innerHTML
+
+    SUG = []
+
+    list.innerHTML = ``
 }
 
 const generateInput = search => {
@@ -42,50 +112,38 @@ const generateInput = search => {
 }
 
 const generateSUG = (input) => {
-    for (let key in SUG){
-        const list = document.getElementById(`${key}-sug`)
-        
-        list.innerHTML = ``
+    const key = input.id
+    const list = document.getElementById(`${key}-sug`)
+   
+    list.innerHTML = ``
 
-        for (let i of SUG[key]){
-            const index = input.value.lastIndexOf(",")
-            const item = document.createElement("li")
-         
-            console.log(i.title)
-            const text = document.createTextNode(input.value.substring(0, index + 1)+ " " + ((key == "ingredients") ? i.name : i.title))
-            item.className = `list-group-item list-group-item-action ${key}-item`
+    for (let i of SUG[key]){
+        const index = input.value.lastIndexOf(",")
+        const item = document.createElement("li")
 
-            item.appendChild(text)
-            list.appendChild(item)
-        }
+        let string = input.value.substring(0, index)
+        if (string) 
+            string += ", " 
+        string += (i.name ? i.name : i.title)
+
+        const text = document.createTextNode(string)
+
+        item.className = `list-group-item list-group-item-action ${key}-item`
+
+        item.appendChild(text)
+        list.appendChild(item)
     }
 }
 
 const inputInputBehaviour = async (event, switches, index) => {
     const input = event.target
+
     let searchSymb = document.getElementById("searchSymb" + input.id)
     searchSymb.style.opacity = input.value ? "0" : "0.5"
     
     if (switches[index + 1]?.checked)
-    {
-
-//          fetchRecipes(input, "api/data").then(response => response.json()).then(data => {
-//              let SUG = data?.SUG
-
-//              const newDiv = document.createElement("div", {class: "Container-fluid Well"})
-
-//              for (object in SUG){
-//                  const newContent = document.createTextNode(object["title"])
-//                  newDiv.appendChild(newDiv)
-//              } 
-//              input.parentElement.appendChild(newDiv)
-
-//          })
-        
-        await fetchingPost(input, "api/auto-complete").then(response => response.json()).then(data => SUG = data?.SUG )
-    }
+        return await fetchingPost(input, "/api/auto-complete").then(response => response.json()).then(data => SUG = data?.SUG )
 }
-
 
 const fetchingPost = async (input, path) => await fetch(path, 
     {
@@ -100,51 +158,17 @@ const fetchingPost = async (input, path) => await fetch(path,
 
 window.onload = main
 
-let baseURL = "https://api.spoonacular.com/recipes"
-
-const SuggestionsByIngredients = async () => {
-    const ingredient = document.getElementById("ingredients")
-    const endpoint = `${baseURL}/findByIngredients`
-    const param = new URLSearchParams({
-        apiKey : "ca3f41f038834995add29d5032f16a23",
-        ingredients : ingredient.value,
-        number : 10
-    })
-
-    const response = await fetch(`${endpoint}?${param}`)
-
-    if (!response.ok) throw new Error("Failed to fetch data")
-    else {
-        const data = await response.json()
-        updateSuggestions(data, "Ingredients")
-    }
-}
-
-const updateSuggestions = (data, type) => {
-    const input = document.getElementById("ingredients")
-
-    input.style.boxShadow = verifyObject(data) ? "0 0 10px green" : "0 0 10px red"
-
-    const suggestions = document.getElementById("suggestions")
-    suggestions.innerHTML = ""
-    
-    for (let recipe of data){
-        suggestions.innerHTML += `
-            <div class="suggestions container-block col-md-4"><div class="well">#${type}<img src="${recipe.image}">${recipe.title}</div></div>
-        `
-    }
-}
-
-const verifyObject = obj => obj && obj !== "null" && obj !== "undefined" && Object.keys(obj).length > 0
-
 const styleSearch = () => {
     let switches = document.querySelectorAll(".form-check-input")
     let inputs = document.querySelectorAll(".search")
+
     switches = Array.from(switches)
     inputs = Array.from(inputs)
 
     const inputDisplay = (index, display) => index > -1 ? inputs[index].style.display = display ? "block" : "none" : null 
+
     let complexMode = false
+
     switches.forEach((sw, index) => sw.addEventListener("change", () => {
         if (sw.name == "complex") {
             complexMode = !complexMode
@@ -154,12 +178,38 @@ const styleSearch = () => {
             })
         }else if (sw.id == "enable-cuisine") {
             switches[0].checked = sw.checked
-            switches[1].checked = sw.checked || switches[1].checked
-            switches[2].checked = sw.checked || switches[2].checked
-
-            switches.forEach((s, index) => inputDisplay(index - 1, s.checked))
-        
+            
+            inputDisplay(index - 1, sw.checked)
         }else
             inputDisplay(index-1, sw.checked)
     }))
 }
+
+document.addEventListener("click", event => {
+    let list ;
+    let li ;
+    if (event.target.tagName == "LI"){
+        li = event.target
+        list = event.target.parentElement
+    }
+    else{
+        const list1 = document.getElementById("ingredients-sug")
+        const list2 = document.getElementById("cuisine-sug")
+
+        SUG = []
+        list1.innerHTML = ``
+        list2.innerHTML = ``
+        return ;
+    }
+    
+    if (li){
+
+        const id = list.id.substring(0, list.id.indexOf("-"))
+        const input = document.getElementById(id)
+
+        input.value = li.innerText
+        list.innerHTML = ``
+
+        SUG = []
+    }
+})
