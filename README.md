@@ -1,6 +1,7 @@
 # RECIPEDIA
 #### Video Demo: [link](https://youtu.be/Jp9N1UwS5d4)
-#### Description: STORY :
+#### Description: 
+STORY :
 Bob is an autism 17 yo boy, he love passing his days surfing the internet and so. One day, his parents decided to go to a trip for 2 days and leave their boy alone (because Bob don't like trips), he loves to stay alone in his room and so in the house too!
 Bob's mom always cooking the best food for Bob, and she kept food in fridge for him while their comeback after 2 days...
 The day 1 of Bob's surviving journey, he went to fridge to bring up some food and eat his dinner, he taste the food and "VOILA" he found some weird taste there (maybe cheese is rotten?), he gave up eating and told himself "Hey Bob! you are 17 years old, i should be able to care my responsiblity by now", but hey. Bob never tried to cook something in his entire life, even his best food never have asked his mom about its name!
@@ -28,7 +29,7 @@ the nutrients don't have auto complete feature
 easy auto complete makes easier to explore new foods and recipes user may like :D
 there will be also an automation file called `run.sh` use `sudo ./run.sh` to run the localhost faster
 
-TODO :
+Future Updates :
 there is nothing to do with database.db, my project doesn't depend on it yet
 i use bootstrap and fontawesome for frontend design
 there will be also another page in my website called /recipes whenever you visit you will be able to explore random recipes for each visit
